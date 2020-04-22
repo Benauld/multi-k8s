@@ -1,0 +1,25 @@
+language: generic
+sudo: required
+services:
+    - docker
+
+before_install:
+    # up to now the line ended in . but now we want the build context to be in the client directory
+    - docker build -t benauld/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    #    this is only testing the react part of the project
+    - docker run -e CI=true benauld/react-test npm test
+
+after_success:
+    - docker build -t benauld/multi-client ./client
+    - docker build -t benauld/multi-nginx ./nginx
+    - docker build -t benauld/multi-server ./server
+    - docker build -t benauld/multi-worker ./worker
+    # login to docker CLI
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    #  Take those images and push them to docker hub
+    - docker push benauld/multi-client
+    - docker push benauld/multi-nginx
+    - docker push benauld/multi-server
+    - docker push benauld/multi-worker
