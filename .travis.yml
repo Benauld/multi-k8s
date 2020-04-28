@@ -22,7 +22,7 @@ before_install:
     #  what is the name of your cluster within the zone
     - gcloud container clusters get-credentials multi-cluster
     # login to docker CLI (these need setting up as environment variables within Travis)
-    - echo "$DOCKER_PASSWORD" | login -u "$DOCKER_USERNAME" --password-stdin
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     #  load up tests
     - docker build -t benauld/react-test -f ./client/Dockerfile.dev ./client
 
